@@ -13,7 +13,7 @@ from src.utils import (
 
 def main():
     st.set_page_config(
-        page_title="Candelaria TRAJE DE LUCES",
+        page_title="Candelaria Luces",
         layout="wide",
         initial_sidebar_state="collapsed"
     )
@@ -29,7 +29,7 @@ def main():
             logout()
             return
 
-    st.title("Candelaria Luces")
+    st.title("Candelaria Traje de Luces - Estadio")
 
     # Inicializar Firebase
     db = init_firebase()
