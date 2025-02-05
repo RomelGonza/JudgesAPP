@@ -9,7 +9,6 @@ from src.utils import (
     cargar_candidatos,
     actualizar_calificacion,
     verificar_calificacion_existente,
-    obtener_subcriterios
 )
 
 def main():
