@@ -65,7 +65,7 @@ def login():
                     st.session_state.user_email = email
                     st.success("¡Inicio de sesión exitoso!")
                     time.sleep(1)
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("Usuario o contraseña incorrectos")
             except Exception as e:
@@ -80,7 +80,7 @@ def logout():
     st.session_state.user_email = None
     st.success("Sesión cerrada exitosamente")
     time.sleep(1)
-    st.experimental_rerun()
+    st.rerun()
 
 def check_session():
     """Verifica si hay una sesión activa"""
