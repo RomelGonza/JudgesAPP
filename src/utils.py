@@ -156,7 +156,7 @@ def actualizar_calificacion(db, candidato_id, jurado_num, calificaciones, catego
 
 def verificar_calificacion_existente(db, candidato_id, jurado_num, categoria):
     """
-    Verifica si ya existe una calificación para este jurado y candidato
+    Verifica si ya existe una calificación diferente de 0 para este jurado y candidato.
     """
     try:
         # Obtener el documento del candidato
@@ -168,9 +168,27 @@ def verificar_calificacion_existente(db, candidato_id, jurado_num, categoria):
         campo = obtener_campo_firebase(jurado_num, categoria)
         datos = doc.to_dict()
         
-        # Verificar si ya existe una calificación
-        return campo in datos and datos[campo] is not None
+        # Si el campo no existe, retornar False
+        if campo not in datos:
+            return False
+            
+        calificacion = datos[campo]
+        
+        # Si la calificación es None o 0, retornar False
+        if calificacion is None or calificacion == 0:
+            return False
+            
+        # Convertir a float si es string
+        if isinstance(calificacion, str):
+            try:
+                calificacion = float(calificacion)
+                return calificacion > 0
+            except ValueError:
+                return False
+                
+        # Si la calificación es numérica, verificar si es mayor que 0
+        return float(calificacion) > 0
+        
     except Exception as e:
         st.error(f"Error al verificar calificación existente: {e}")
         return False
-
