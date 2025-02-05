@@ -33,18 +33,65 @@ def obtener_criterio_calificacion(jurado_num):
             return criterio
     return "CRITERIO NO ASIGNADO"
 
-def obtener_campo_firebase(jurado_num, categoria):
-    """Obtiene el campo de Firebase según el número de jurado"""
-    campos_etapa1 = {
-        (1, 2, 3): "e_calificacion_jurado{}_pv",
-        (4, 5, 6): "e_calificacion_jurado{}_mc",
-        (7, 8, 9): "e_calificacion_jurado{}_c",
-        (10,): "v_calificacion_jurado_mc",
-        (11,): "v_calificacion_jurado_v",
-        (12,): "v_calificacion_jurado_pdl",
-        (13,): "v_calificacion_jurado_ci"
+def cargar_candidatos(db):
+    """Carga los candidatos desde Firebase"""
+    try:
+        candidatos_ref = db.collection("Agrupaciones_dia1").order_by("numero").stream()
+        return [(c.id, f"{c.to_dict()['nombre_del_conjunto']} (N° {c.to_dict()['numero']})") 
+                for c in candidatos_ref]
+    except Exception as e:
+        st.error(f"Error al cargar candidatos: {e}")
+        return []
+
+def get_max_score(criterio, categoria):
+    """Obtiene el puntaje máximo según criterio y categoría"""
+    limites = {
+        "PRESENTACION Y VESTIMENTA": {
+            "SIKURIS DE UN SOLO BOMBO": 20,
+            "SIKURIS VARIOS BOMBOS": 20,
+            "AYARACHIS, ISLA SIKURIS Y KANTU": 20,
+            "default": 20
+        },
+        "MUSICA": {
+            "SIKURIS DE UN SOLO BOMBO": 30,
+            "SIKURIS VARIOS BOMBOS": 30,
+            "AYARACHIS, ISLA SIKURIS Y KANTU": 30,
+            "default": 20
+        },
+        "COREOGRAFIA": {
+            "SIKURIS DE UN SOLO BOMBO": 20,
+            "SIKURIS VARIOS BOMBOS": 20,
+            "AYARACHIS, ISLA SIKURIS Y KANTU": 20,
+            "default": 30
+        },
+        "MUSICA(danzarines y musicos)": {"default": 10},
+        "VESTIMENTA(danzarines y musicos)": {"default": 10},
+        "RECORRIDO(desplazamiento)": {"default": 7},
+        "Brigada Ecologica": {"default": 3},
     }
-    for jurados, campo in campos_etapa1.items():
-        if jurado_num in jurados:
-            return campo.format(jurado_num)
-    return None
+    criterio_limits = limites.get(criterio, {"default": 30})
+    return criterio_limits.get(categoria.upper(), criterio_limits["default"])
+
+def actualizar_calificacion(db, candidato_id, jurado_num, calificaciones, categoria):
+    """Actualiza la calificación en Firebase"""
+    try:
+        if jurado_num in [10, 11, 12, 13]:
+            total_score = sum(calificaciones)
+            field_mapping = {
+                10: "v_calificacion_jurado_mc",
+                11: "v_calificacion_jurado_v",
+                12: "v_calificacion_jurado_pdl",
+                13: "v_calificacion_jurado_ci"
+            }
+            campo_firebase = field_mapping[jurado_num]
+        else:
+            campo_firebase = obtener_campo_firebase(jurado_num, categoria)
+            total_score = calificaciones[0]
+
+        db.collection("Agrupaciones_dia1").document(candidato_id).update({
+            campo_firebase: total_score
+        })
+        return True
+    except Exception as e:
+        st.error(f"Error al actualizar calificación: {e}")
+        return False
