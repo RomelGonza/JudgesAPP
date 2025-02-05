@@ -47,6 +47,26 @@ def main():
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     
+    # CSS para deshabilitar la entrada de texto en el selectbox
+    st.markdown("""
+        <style>
+            div[data-baseweb="select"] input {
+                display: none !important;
+            }
+            div[data-baseweb="select"] {
+                cursor: pointer !important;
+            }
+            div[role="listbox"] {
+                max-height: 300px !important;
+                overflow-y: auto !important;
+            }
+            div[data-baseweb="select"] * {
+                -webkit-user-select: none !important;
+                user-select: none !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
@@ -106,57 +126,61 @@ def main():
                     )
                     calificaciones = [calificacion] if calificacion is not None else []
     
-                # Botón de envío - solo habilitarlo si hay calificaciones
-                if len(calificaciones) > 0:
-                    st.markdown("""
-                        <style>
-                            div.stButton > button {
-                                background-color: #28a745;
-                                color: white;
-                                border: none;
-                                padding: 0.5rem 1rem;
-                                font-size: 1rem;
-                                font-weight: 600;
-                            }
-                            div.stButton > button:hover {
-                                background-color: #218838;
-                                border: none;
-                            }
-                            div.stButton > button:active, div.stButton > button:focus {
-                                background-color: #1e7e34;
-                                border: none;
-                                box-shadow: none;
-                            }
-                        </style>
-                    """, unsafe_allow_html=True)
-                    if st.button("Enviar Calificación"):
-                        if st.session_state.get('confirmacion', False):
-                            try:
-                                # Verificar que todas las calificaciones estén ingresadas
-                                if jurado_num in [10, 11, 12, 13] and len(calificaciones) != len(criterios):
-                                    st.error("Por favor, ingrese todas las calificaciones antes de enviar.")
-                                    st.session_state.confirmacion = False
-                                    return
-                                
-                                exito = actualizar_calificacion(
-                                    db,
-                                    candidato_seleccionado,
-                                    jurado_num,
-                                    calificaciones,
-                                    datos['categoria']
-                                )
-                                if exito:
-                                    st.success("✅ Calificación enviada correctamente")
-                                    st.session_state.confirmacion = False
-                                    st.rerun()
-                            except Exception as e:
-                                st.error(f"Error al enviar calificación: {e}")
-                        else:
-                            st.session_state.confirmacion = True
-                            st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
-                            st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
-                else:
-                    st.info("Por favor, ingrese una calificación para poder enviar.")
+                # Estilo para el botón verde
+                st.markdown("""
+                    <style>
+                        div.stButton > button {
+                            background-color: #28a745;
+                            color: white;
+                            border: none;
+                            padding: 0.5rem 1rem;
+                            font-size: 1rem;
+                            font-weight: 600;
+                        }
+                        div.stButton > button:hover {
+                            background-color: #218838;
+                            border: none;
+                        }
+                        div.stButton > button:active, div.stButton > button:focus {
+                            background-color: #1e7e34;
+                            border: none;
+                            box-shadow: none;
+                        }
+                    </style>
+                """, unsafe_allow_html=True)
+                
+                # El botón siempre está presente
+                if st.button("Enviar Calificación"):
+                    # Validación al momento de enviar
+                    if len(calificaciones) == 0:
+                        st.error("Por favor, ingrese una calificación antes de enviar.")
+                        return
+                        
+                    if st.session_state.get('confirmacion', False):
+                        try:
+                            # Verificar que todas las calificaciones estén ingresadas
+                            if jurado_num in [10, 11, 12, 13] and len(calificaciones) != len(criterios):
+                                st.error("Por favor, ingrese todas las calificaciones antes de enviar.")
+                                st.session_state.confirmacion = False
+                                return
+                            
+                            exito = actualizar_calificacion(
+                                db,
+                                candidato_seleccionado,
+                                jurado_num,
+                                calificaciones,
+                                datos['categoria']
+                            )
+                            if exito:
+                                st.success("✅ Calificación enviada correctamente")
+                                st.session_state.confirmacion = False
+                                st.rerun()
+                        except Exception as e:
+                            st.error(f"Error al enviar calificación: {e}")
+                    else:
+                        st.session_state.confirmacion = True
+                        st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
+                        st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
     
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
