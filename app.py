@@ -8,6 +8,7 @@ from src.utils import (
     obtener_campo_firebase,
     cargar_candidatos,
     actualizar_calificacion
+    verificar_calificacion_existente
 )
 
 def main():
