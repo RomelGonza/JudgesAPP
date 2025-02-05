@@ -49,21 +49,21 @@ def main():
     
     ###
     if candidatos:
-    # Crear lista de opciones con "Seleccione un conjunto" como primera opción
-    opciones = ["Seleccione un conjunto"] + list(candidatos.values())
-    
-    # Selector de conjunto
-    conjunto_seleccionado = st.selectbox(
-        "Seleccione un conjunto",
-        options=opciones,
-        index=0
-    )
+        # Crear lista de opciones con "Seleccione un conjunto" como primera opción
+        opciones = ["Seleccione un conjunto"] + list(candidatos.values())
+        
+        # Selector de conjunto
+        conjunto_seleccionado = st.selectbox(
+            "Seleccione un conjunto",
+            options=opciones,
+            index=0
+        )
     
     # Obtener el ID del candidato seleccionado
-    if conjunto_seleccionado != "Seleccione un conjunto":
-        candidato_seleccionado = [k for k, v in candidatos.items() if v == conjunto_seleccionado][0]
-    else:
-        candidato_seleccionado = None
+        if conjunto_seleccionado != "Seleccione un conjunto":
+            candidato_seleccionado = [k for k, v in candidatos.items() if v == conjunto_seleccionado][0]
+        else:
+            candidato_seleccionado = None
     '''
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
@@ -73,70 +73,70 @@ def main():
     '''
 # ... resto del código ...
 
-    if candidato_seleccionado:
-        try:
-            # Obtener datos del conjunto
-            doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
-            datos = doc.to_dict()
-    
-            # Verificar si ya existe calificación
-            if verificar_calificacion_existente(db, candidato_seleccionado, jurado_num, datos['categoria']):
-                st.warning("⚠️ Ya has calificado a este conjunto. No se permite modificar la calificación.")
-                # Mostrar la calificación existente
-                campo = obtener_campo_firebase(jurado_num, datos['categoria'])
-                st.info(f"Calificación enviada: {datos[campo]}")
-            else:
-                st.write("### Calificación")
-                st.write(f"Conjunto: {datos['nombre_del_conjunto']}")
-                st.write(f"Categoría: {datos['categoria']}")
-    
-                # Input de calificación
-                if jurado_num in [10, 11, 12, 13]:
-                    calificaciones = []
-                    criterios = obtener_subcriterios(jurado_num)
-                    for criterio in criterios:
-                        cal = st.number_input(
+        if candidato_seleccionado:
+            try:
+                # Obtener datos del conjunto
+                doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
+                datos = doc.to_dict()
+        
+                # Verificar si ya existe calificación
+                if verificar_calificacion_existente(db, candidato_seleccionado, jurado_num, datos['categoria']):
+                    st.warning("⚠️ Ya has calificado a este conjunto. No se permite modificar la calificación.")
+                    # Mostrar la calificación existente
+                    campo = obtener_campo_firebase(jurado_num, datos['categoria'])
+                    st.info(f"Calificación enviada: {datos[campo]}")
+                else:
+                    st.write("### Calificación")
+                    st.write(f"Conjunto: {datos['nombre_del_conjunto']}")
+                    st.write(f"Categoría: {datos['categoria']}")
+        
+                    # Input de calificación
+                    if jurado_num in [10, 11, 12, 13]:
+                        calificaciones = []
+                        criterios = obtener_subcriterios(jurado_num)
+                        for criterio in criterios:
+                            cal = st.number_input(
+                                f"Calificación - {criterio}",
+                                min_value=0.0,
+                                max_value=10.0,
+                                step=0.5,
+                                key=f"cal_{criterio}"
+                            )
+                            calificaciones.append(cal)
+                    else:
+                        max_valor = get_max_score(criterio, datos['categoria'])
+                        calificacion = st.number_input(
                             f"Calificación - {criterio}",
                             min_value=0.0,
-                            max_value=10.0,
-                            step=0.5,
-                            key=f"cal_{criterio}"
+                            max_value=float(max_valor),
+                            step=0.5
                         )
-                        calificaciones.append(cal)
-                else:
-                    max_valor = get_max_score(criterio, datos['categoria'])
-                    calificacion = st.number_input(
-                        f"Calificación - {criterio}",
-                        min_value=0.0,
-                        max_value=float(max_valor),
-                        step=0.5
-                    )
-                    calificaciones = [calificacion]
-    
-                # Botón de envío
-                if st.button("Enviar Calificación"):
-                    if st.session_state.get('confirmacion', False):
-                        try:
-                            exito = actualizar_calificacion(
-                                db,
-                                candidato_seleccionado,
-                                jurado_num,
-                                calificaciones,
-                                datos['categoria']
-                            )
-                            if exito:
-                                st.success("✅ Calificación enviada correctamente")
-                                st.session_state.confirmacion = False
-                                st.rerun()
-                        except Exception as e:
-                            st.error(f"Error al enviar calificación: {e}")
-                    else:
-                        st.session_state.confirmacion = True
-                        st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
-                        st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
-    
-        except Exception as e:
-            st.error(f"Error al cargar datos del conjunto: {e}")
+                        calificaciones = [calificacion]
+        
+                    # Botón de envío
+                    if st.button("Enviar Calificación"):
+                        if st.session_state.get('confirmacion', False):
+                            try:
+                                exito = actualizar_calificacion(
+                                    db,
+                                    candidato_seleccionado,
+                                    jurado_num,
+                                    calificaciones,
+                                    datos['categoria']
+                                )
+                                if exito:
+                                    st.success("✅ Calificación enviada correctamente")
+                                    st.session_state.confirmacion = False
+                                    st.rerun()
+                            except Exception as e:
+                                st.error(f"Error al enviar calificación: {e}")
+                        else:
+                            st.session_state.confirmacion = True
+                            st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
+                            st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
+        
+            except Exception as e:
+                st.error(f"Error al cargar datos del conjunto: {e}")
 
 if __name__ == "__main__":
     main()
