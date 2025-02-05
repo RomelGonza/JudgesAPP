@@ -75,22 +75,6 @@ def main():
                 # Mostrar la calificación existente
                 campo = obtener_campo_firebase(jurado_num, datos['categoria'])
                 st.info(f"Calificación enviada: {datos[campo]}")
-            else:
-                # Input de calificación
-                if jurado_num in [10, 11, 12, 13]:
-                    calificaciones = []
-                    criterios = obtener_subcriterios(jurado_num)
-                    for criterio in criterios:
-                        cal = st.number_input(
-                            f"Calificación - {criterio}",
-                            min_value=0.0,
-                            max_value=10.0,
-                            step=0.5,
-                            value=None
-                            placeholder="Ingrese calificación",
-                            key=f"cal_{criterio}"
-                        )
-                        calificaciones.append(cal)
 
                 #a
                 else:
