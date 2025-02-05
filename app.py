@@ -47,26 +47,34 @@ def main():
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     
-    # Estilo para el radio button que simule un selector
+    # CSS para deshabilitar la entrada de texto en el selectbox
     st.markdown("""
         <style>
-            div.row-widget.stRadio > div {
-                flex-direction: column;
-                max-height: 300px;
-                overflow-y: auto;
+            /* Ocultar el input de búsqueda */
+            div[data-baseweb="select"] input {
+                display: none !important;
             }
-            div.row-widget.stRadio > div[role="radiogroup"] > label {
-                padding: 10px;
-                background-color: #f0f2f6;
-                margin: 4px 0;
-                border-radius: 4px;
-                cursor: pointer;
+            
+            /* Estilo para el contenedor del select */
+            div[data-baseweb="select"] {
+                cursor: pointer !important;
             }
-            div.row-widget.stRadio > div[role="radiogroup"] > label:hover {
-                background-color: #e0e2e6;
+            
+            /* Estilo para las opciones */
+            div[role="listbox"] {
+                max-height: 300px !important;
+                overflow-y: auto !important;
             }
-            div.row-widget.stRadio > div[role="radiogroup"] {
-                gap: 0.5rem;
+            
+            /* Deshabilitar interacción con texto */
+            div[data-baseweb="select"] * {
+                -webkit-user-select: none !important;
+                user-select: none !important;
+            }
+            
+            /* Estilo para opciones al pasar el mouse */
+            div[role="option"]:hover {
+                background-color: #e6e6e6 !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -80,15 +88,15 @@ def main():
         datos = doc.to_dict()
         opciones_dict[doc.id] = f"N°{datos.get('numero', 'S/N')} - {datos.get('nombre_del_conjunto', 'Sin nombre')}"
     
-    # Radio button que simula un selector
-    candidato_seleccionado = st.radio(
+    # Selectbox no editable
+    candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
         options=list(opciones_dict.keys()),
         format_func=lambda x: opciones_dict[x],
-        key="selector_conjunto",
-        label_visibility="visible"
+        key="selector_conjunto"
     )
 
+    # Resto del código igual...
     if candidato_seleccionado and candidato_seleccionado != "":
         try:
             # Obtener datos del conjunto
@@ -105,7 +113,6 @@ def main():
 
             if calificacion_existe:
                 st.warning("⚠️ Ya has calificado a este conjunto. No se permite modificar la calificación.")
-                # Mostrar la calificación existente
                 campo = obtener_campo_firebase(jurado_num, datos['categoria'])
                 st.info(f"Calificación enviada: {datos[campo]}")
             else:
