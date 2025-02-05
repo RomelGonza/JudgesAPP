@@ -102,7 +102,7 @@ def main():
                             if exito:
                                 st.success("Calificación enviada correctamente")
                                 st.session_state.confirmacion = False
-                                st.experimental_rerun()
+                                st.rerun()
                         except Exception as e:
                             st.error(f"Error al enviar calificación: {e}")
                     else:
