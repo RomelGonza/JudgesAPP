@@ -71,23 +71,25 @@ def main():
         </style>
     """, unsafe_allow_html=True)
     
-    # Crear lista de opciones con "Seleccione un conjunto" como primera opción
-    opciones = [(None, "Seleccione un conjunto")] + [(id, f"N°{datos['numero']} - {datos['nombre_del_conjunto']}") 
-               for id, datos in candidatos]
+    # Crear diccionario de opciones
+    opciones_dict = {"": "Seleccione un conjunto"}
+    
+    # Obtener documentos y sus datos
+    docs = db.collection("Agrupaciones_dia1").stream()
+    for doc in docs:
+        datos = doc.to_dict()
+        opciones_dict[doc.id] = f"N°{datos.get('numero', 'S/N')} - {datos.get('nombre_del_conjunto', 'Sin nombre')}"
     
     # Radio button que simula un selector
-    seleccion = st.radio(
+    candidato_seleccionado = st.radio(
         "Seleccione un conjunto",
-        options=[opt[0] for opt in opciones],
-        format_func=lambda x: dict(opciones)[x],
+        options=list(opciones_dict.keys()),
+        format_func=lambda x: opciones_dict[x],
         key="selector_conjunto",
         label_visibility="visible"
     )
-    
-    # Asignar el candidato seleccionado
-    candidato_seleccionado = seleccion if seleccion is not None else None
 
-    if candidato_seleccionado:
+    if candidato_seleccionado and candidato_seleccionado != "":
         try:
             # Obtener datos del conjunto
             doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
