@@ -1,36 +1,12 @@
 import streamlit as st
-from src.auth import check_password, check_session_timeout
-from src.firebase_config import init_firebase, get_max_score
+from src.auth import login, logout, check_session
+from src.firebase_config import init_firebase
 from src.utils import (
     obtener_numero_jurado,
     obtener_criterio_calificacion,
-    obtener_campo_firebase
+    cargar_candidatos,
+    actualizar_calificacion
 )
-
-# Verificación de secrets (temporal, eliminar en producción)
-def check_secrets():
-    try:
-        if "firebase" in st.secrets:
-            st.success("✅ Credenciales de Firebase encontradas")
-        if "auth" in st.secrets and "authorized_users" in st.secrets["auth"]:
-            st.success("✅ Credenciales de usuarios encontradas")
-            num_users = len(st.secrets["auth"]["authorized_users"])
-            st.write(f"Número de usuarios configurados: {num_users}")
-    except Exception as e:
-        st.error(f"Error al verificar secrets: {str(e)}")
-
-# Agregar al inicio de main() para debugging
-if st.secrets:
-    check_secrets()
-def cargar_candidatos(db):
-    """Carga los candidatos desde Firebase"""
-    try:
-        candidatos_ref = db.collection("Agrupaciones_dia1").order_by("numero").stream()
-        return [(c.id, f"{c.to_dict()['nombre_del_conjunto']} (N° {c.to_dict()['numero']})") 
-                for c in candidatos_ref]
-    except Exception as e:
-        st.error(f"Error al cargar candidatos: {e}")
-        return []
 
 def main():
     st.set_page_config(
@@ -39,21 +15,31 @@ def main():
         initial_sidebar_state="collapsed"
     )
 
-    # Verificar autenticación y tiempo de sesión
-    if not check_password() or not check_session_timeout():
-        return
+    # Autenticación
+    if not check_session():
+        if not login():
+            return
+
+    # Sidebar con botón de logout
+    with st.sidebar:
+        if st.button("Cerrar Sesión"):
+            logout()
+            return
 
     st.title("Candelaria Originarios")
 
-    # Obtener email del usuario y número de jurado
-    email = st.session_state.get("current_user")
+    # Inicializar Firebase
+    db = init_firebase()
+    if not db:
+        st.error("Error al conectar con la base de datos")
+        return
+
+    # Obtener información del jurado
+    email = st.session_state.user_email
     jurado_num = obtener_numero_jurado(email)
     criterio = obtener_criterio_calificacion(jurado_num)
 
     st.sidebar.write(f"Criterio de calificación: {criterio}")
-
-    # Inicializar Firebase
-    db = init_firebase()
 
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
@@ -64,77 +50,65 @@ def main():
     )
 
     if candidato_seleccionado:
-        candidato_doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
-        if candidato_doc.exists:
-            datos = candidato_doc.to_dict()
-            
-            # Mostrar información del conjunto
-            col1, col2 = st.columns([1, 3])
-            with col1:
-                st.markdown(f"### N° {datos['numero']}")
-            with col2:
-                st.markdown(f"**Conjunto:** {datos['nombre_del_conjunto']}")
-                st.markdown(f"**Categoría:** {datos['categoria']}")
+        try:
+            candidato_doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
+            if candidato_doc.exists:
+                datos = candidato_doc.to_dict()
+                
+                # Mostrar información del conjunto
+                col1, col2 = st.columns([1, 3])
+                with col1:
+                    st.markdown(f"### N° {datos['numero']}")
+                with col2:
+                    st.markdown(f"**Conjunto:** {datos['nombre_del_conjunto']}")
+                    st.markdown(f"**Categoría:** {datos['categoria']}")
 
-            # Verificar si ya existe calificación
-            campo_firebase = obtener_campo_firebase(jurado_num, datos['categoria'])
-            if campo_firebase and datos.get(campo_firebase, 0) != 0:
-                st.warning("Ya ha calificado a este conjunto.")
-                return
-
-            # Sistema de calificación
-            if jurado_num in [10, 11, 12, 13]:
-                calificaciones = []
-                criterios = ["MUSICA", "VESTIMENTA", "RECORRIDO", "Brigada Ecologica"]
-                for criterio in criterios:
-                    cal = st.number_input(
+                # Sistema de calificación
+                if jurado_num in [10, 11, 12, 13]:
+                    calificaciones = []
+                    criterios = ["MUSICA", "VESTIMENTA", "RECORRIDO", "Brigada Ecologica"]
+                    for criterio in criterios:
+                        cal = st.number_input(
+                            f"Calificación - {criterio}",
+                            min_value=0.0,
+                            max_value=10.0,
+                            step=0.5,
+                            key=f"cal_{criterio}"
+                        )
+                        calificaciones.append(cal)
+                else:
+                    max_valor = get_max_score(criterio, datos['categoria'])
+                    calificacion = st.number_input(
                         f"Calificación - {criterio}",
                         min_value=0.0,
-                        max_value=10.0,
-                        step=0.5,
-                        key=f"cal_{criterio}"
+                        max_value=float(max_valor),
+                        step=0.5
                     )
-                    calificaciones.append(cal)
-            else:
-                max_valor = get_max_score(criterio, datos['categoria'])
-                calificacion = st.number_input(
-                    f"Calificación - {criterio}",
-                    min_value=0.0,
-                    max_value=float(max_valor),
-                    step=0.5
-                )
-                calificaciones = [calificacion]
+                    calificaciones = [calificacion]
 
-            # Botón de envío
-            if st.button("Enviar Calificación"):
-                if st.session_state.get('confirmacion', False):
-                    try:
-                        if jurado_num in [10, 11, 12, 13]:
-                            total_score = sum(calificaciones)
-                            field_mapping = {
-                                10: "v_calificacion_jurado_mc",
-                                11: "v_calificacion_jurado_v",
-                                12: "v_calificacion_jurado_pdl",
-                                13: "v_calificacion_jurado_ci"
-                            }
-                            campo_firebase = field_mapping[jurado_num]
-                            db.collection("Agrupaciones_dia1").document(candidato_seleccionado).update({
-                                campo_firebase: total_score
-                            })
-                        else:
-                            campo_firebase = obtener_campo_firebase(jurado_num, datos['categoria'])
-                            db.collection("Agrupaciones_dia1").document(candidato_seleccionado).update({
-                                campo_firebase: calificaciones[0]
-                            })
-                        
-                        st.success("Calificación enviada correctamente")
-                        st.session_state.confirmacion = False
-                        st.experimental_rerun()
-                    except Exception as e:
-                        st.error(f"Error al enviar calificación: {e}")
-                else:
-                    st.session_state.confirmacion = True
-                    st.warning("¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
+                # Botón de envío
+                if st.button("Enviar Calificación"):
+                    if st.session_state.get('confirmacion', False):
+                        try:
+                            exito = actualizar_calificacion(
+                                db,
+                                candidato_seleccionado,
+                                jurado_num,
+                                calificaciones,
+                                datos['categoria']
+                            )
+                            if exito:
+                                st.success("Calificación enviada correctamente")
+                                st.session_state.confirmacion = False
+                                st.experimental_rerun()
+                        except Exception as e:
+                            st.error(f"Error al enviar calificación: {e}")
+                    else:
+                        st.session_state.confirmacion = True
+                        st.warning("¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
+
+        except Exception as e:
+            st.error(f"Error al cargar datos del conjunto: {e}")
 
 if __name__ == "__main__":
     main()
