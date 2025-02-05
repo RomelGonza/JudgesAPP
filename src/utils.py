@@ -39,7 +39,7 @@ def cargar_candidatos(db):
     """
     try:
         candidatos = []
-        docs = db.collection("Agrupaciones_dia1").stream()
+        docs = db.collection("luces_day_one").stream()
         
         for doc in docs:
             datos = doc.to_dict()
@@ -145,7 +145,7 @@ def actualizar_calificacion(db, candidato_id, jurado_num, calificaciones, catego
             campo_firebase = obtener_campo_firebase(jurado_num, categoria)
             total_score = calificaciones[0]
 
-        db.collection("Agrupaciones_dia1").document(candidato_id).update({
+        db.collection("luces_day_one").document(candidato_id).update({
             campo_firebase: total_score
         })
         return True
@@ -160,7 +160,7 @@ def verificar_calificacion_existente(db, candidato_id, jurado_num, categoria):
     """
     try:
         # Obtener el documento del candidato
-        doc = db.collection("Agrupaciones_dia1").document(candidato_id).get()
+        doc = db.collection("luces_day_one").document(candidato_id).get()
         if not doc.exists:
             return False
 
