@@ -18,11 +18,28 @@ def main():
         initial_sidebar_state="collapsed"
     )
     
+    # Ocultar todos los elementos de GitHub y menú
     st.markdown("""
         <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
+            .css-1rs6os {visibility: hidden;}
+            .css-17ziqus {visibility: hidden;}
+            .css-1q1n0ol {visibility: hidden;}
+            .css-1vq4p4l {visibility: hidden;}
+            .css-1lsmgbg {visibility: hidden;}
+            .css-1dp5vir {visibility: hidden;}
+            .css-1f1ktqg {visibility: hidden;}
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            .stDeployButton {display: none;}
+            .css-1rs6os {display: none;}
+            .css-17ziqus {display: none;}
+            .css-1q1n0ol {display: none;}
+            .css-1vq4p4l {display: none;}
+            .css-1lsmgbg {display: none;}
+            .css-1dp5vir {display: none;}
+            .css-1f1ktqg {display: none;}
         </style>
     """, unsafe_allow_html=True)
     
