@@ -108,6 +108,27 @@ def main():
     
                 # Botón de envío - solo habilitarlo si hay calificaciones
                 if len(calificaciones) > 0:
+                    st.markdown("""
+                        <style>
+                            div.stButton > button {
+                                background-color: #28a745;
+                                color: white;
+                                border: none;
+                                padding: 0.5rem 1rem;
+                                font-size: 1rem;
+                                font-weight: 600;
+                            }
+                            div.stButton > button:hover {
+                                background-color: #218838;
+                                border: none;
+                            }
+                            div.stButton > button:active, div.stButton > button:focus {
+                                background-color: #1e7e34;
+                                border: none;
+                                box-shadow: none;
+                            }
+                        </style>
+                    """, unsafe_allow_html=True)
                     if st.button("Enviar Calificación"):
                         if st.session_state.get('confirmacion', False):
                             try:
