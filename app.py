@@ -43,16 +43,34 @@ def main():
     criterio = obtener_criterio_calificacion(jurado_num)
 
     st.sidebar.write(f"Criterio de calificación: {criterio}")
-
-
+    
+     #============================#
+    st.markdown("""
+        <style>
+        div[data-baseweb="select"] > div:first-child {
+            pointer-events: none;
+        }
+        </style>
+    """, unsafe_allow_html=True)    
+    #============================#
+    
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
+    '''
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto"
     )
-
+    '''
+    #============================#
+    candidato_seleccionado = st.selectbox(
+        "Seleccione un conjunto",
+        options=[c[0] for c in candidatos],
+        format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
+        key="selector_conjunto"
+    )
+    #============================#
 
     if candidato_seleccionado:
         try:
