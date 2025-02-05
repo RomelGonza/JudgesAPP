@@ -47,25 +47,6 @@ def main():
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     
-    # CSS para deshabilitar la entrada de texto en el selectbox
-    st.markdown("""
-        <style>
-            div[data-baseweb="select"] input {
-                display: none !important;
-            }
-            div[data-baseweb="select"] {
-                cursor: pointer !important;
-            }
-            div[role="listbox"] {
-                max-height: 300px !important;
-                overflow-y: auto !important;
-            }
-            div[data-baseweb="select"] * {
-                -webkit-user-select: none !important;
-                user-select: none !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
     
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
