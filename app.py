@@ -45,39 +45,45 @@ def main():
     st.sidebar.write(f"Criterio de calificación: {criterio}")
     
      #============================#
-
     st.markdown("""
         <style>
-            /* Ocultar el input de búsqueda pero mantener la funcionalidad del select */
+            /* Prevenir la aparición del teclado y deshabilitar la entrada de texto */
             div[data-baseweb="select"] input {
-                opacity: 0;
-                height: 0;
-                position: absolute;
-                z-index: -1;
+                pointer-events: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                z-index: -1 !important;
+                caret-color: transparent !important;
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                touch-action: none !important;
             }
             
-            /* Mantener el cursor pointer y el scroll */
-            div[data-baseweb="select"] > div {
-                cursor: pointer;
+            /* Asegurar que el select sea solo clickeable */
+            div[data-baseweb="select"] {
+                cursor: pointer !important;
+                -webkit-tap-highlight-color: transparent !important;
             }
             
-            /* Asegurar que el menú desplegable sea scrolleable */
-            div[data-baseweb="popover"] > div {
-                max-height: 300px;
-                overflow-y: auto;
-            }
-            
-            /* Estilo para los items del menú */
-            div[data-baseweb="menu"] {
-                max-height: none;
-            }
-            
+            /* Mantener el scroll en la lista desplegable */
             div[role="listbox"] {
-                overflow-y: auto;
-                max-height: 300px;
+                overflow-y: auto !important;
+                max-height: 300px !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            /* Deshabilitar interacción con texto */
+            div[data-baseweb="select"] * {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
             }
         </style>
     """, unsafe_allow_html=True)
+    
     #============================#
     
     # Cargar y mostrar candidatos
