@@ -46,19 +46,46 @@ def main():
 
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
-    opciones_candidatos = [c[0] for c in candidatos]
-
-    if opciones_candidatos:
-        candidato_seleccionado = st.selectbox(
-            "Seleccione un conjunto",
-            options=opciones_candidatos,
-            format_func=lambda x: dict(candidatos)[x],
-            key="selector_conjunto",
-            index=0  # Establecer un valor predeterminado
-        )
-    else:
-        st.warning("No hay conjuntos disponibles para seleccionar.")
-        return
+    
+    # Estilo para el radio button que simule un selector
+    st.markdown("""
+        <style>
+            div.row-widget.stRadio > div {
+                flex-direction: column;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            div.row-widget.stRadio > div[role="radiogroup"] > label {
+                padding: 10px;
+                background-color: #f0f2f6;
+                margin: 4px 0;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            div.row-widget.stRadio > div[role="radiogroup"] > label:hover {
+                background-color: #e0e2e6;
+            }
+            div.row-widget.stRadio > div[role="radiogroup"] {
+                gap: 0.5rem;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    # Crear lista de opciones con "Seleccione un conjunto" como primera opción
+    opciones = [(None, "Seleccione un conjunto")] + [(id, f"N°{datos['numero']} - {datos['nombre_del_conjunto']}") 
+               for id, datos in candidatos]
+    
+    # Radio button que simula un selector
+    seleccion = st.radio(
+        "Seleccione un conjunto",
+        options=[opt[0] for opt in opciones],
+        format_func=lambda x: dict(opciones)[x],
+        key="selector_conjunto",
+        label_visibility="visible"
+    )
+    
+    # Asignar el candidato seleccionado
+    candidato_seleccionado = seleccion if seleccion is not None else None
 
     if candidato_seleccionado:
         try:
@@ -127,6 +154,6 @@ def main():
     
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
-            
+
 if __name__ == "__main__":
     main()
