@@ -44,17 +44,21 @@ def main():
 
     st.sidebar.write(f"Criterio de calificación: {criterio}")
 
-    
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
-    #============================#
-    candidato_seleccionado = st.selectbox(
-        "Seleccione un conjunto",
-        options=[c[0] for c in candidatos],
-        format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
-        key="selector_conjunto"
-    )
-    #============================#
+    opciones_candidatos = [c[0] for c in candidatos]
+
+    if opciones_candidatos:
+        candidato_seleccionado = st.selectbox(
+            "Seleccione un conjunto",
+            options=opciones_candidatos,
+            format_func=lambda x: dict(candidatos)[x],
+            key="selector_conjunto",
+            index=0  # Establecer un valor predeterminado
+        )
+    else:
+        st.warning("No hay conjuntos disponibles para seleccionar.")
+        return
 
     if candidato_seleccionado:
         try:
