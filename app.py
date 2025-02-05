@@ -7,6 +7,21 @@ from src.utils import (
     obtener_campo_firebase
 )
 
+# Verificación de secrets (temporal, eliminar en producción)
+def check_secrets():
+    try:
+        if "firebase" in st.secrets:
+            st.success("✅ Credenciales de Firebase encontradas")
+        if "auth" in st.secrets and "authorized_users" in st.secrets["auth"]:
+            st.success("✅ Credenciales de usuarios encontradas")
+            num_users = len(st.secrets["auth"]["authorized_users"])
+            st.write(f"Número de usuarios configurados: {num_users}")
+    except Exception as e:
+        st.error(f"Error al verificar secrets: {str(e)}")
+
+# Agregar al inicio de main() para debugging
+if st.secrets:
+    check_secrets()
 def cargar_candidatos(db):
     """Carga los candidatos desde Firebase"""
     try:
