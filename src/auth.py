@@ -3,8 +3,8 @@ import firebase_admin
 from firebase_admin import auth, credentials
 import time
 
-def init_auth():
-    """Inicializa Firebase Authentication"""
+def init_firebase_auth():
+    """Inicializa Firebase si no está ya inicializado"""
     if not firebase_admin._apps:
         try:
             cred_dict = {
@@ -21,6 +21,7 @@ def init_auth():
             }
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
+            return True
         except Exception as e:
             st.error(f"Error al inicializar Firebase: {str(e)}")
             return False
@@ -28,6 +29,11 @@ def init_auth():
 
 def login():
     """Maneja el proceso de login"""
+    # Inicializar Firebase antes de cualquier operación
+    if not init_firebase_auth():
+        st.error("Error al inicializar la autenticación")
+        return False
+
     if 'user' not in st.session_state:
         st.session_state.user = None
 
@@ -42,11 +48,10 @@ def login():
 
         if st.button("Iniciar Sesión", use_container_width=True):
             try:
-                # Verificar credenciales contra Firebase
+                # Verificar si el usuario existe en Firebase
                 user = auth.get_user_by_email(email)
                 
-                # Aquí deberías verificar la contraseña de forma segura
-                # Por ahora, usaremos una lista de usuarios autorizados en secrets
+                # Verificar credenciales contra los secrets
                 if email in st.secrets["auth"]["authorized_users"]:
                     if password == st.secrets["auth"]["authorized_users"][email]:
                         st.session_state.user = user
@@ -58,6 +63,8 @@ def login():
                         st.error("Contraseña incorrecta")
                 else:
                     st.error("Usuario no autorizado")
+            except auth.UserNotFoundError:
+                st.error("Usuario no encontrado")
             except Exception as e:
                 st.error("Error en el inicio de sesión. Verifica tus credenciales.")
                 st.error(f"Detalles: {str(e)}")
