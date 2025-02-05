@@ -46,12 +46,31 @@ def main():
 
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
+    
+    ###
+    if candidatos:
+    # Crear lista de opciones con "Seleccione un conjunto" como primera opción
+    opciones = ["Seleccione un conjunto"] + list(candidatos.values())
+    
+    # Selector de conjunto
+    conjunto_seleccionado = st.selectbox(
+        "Seleccione un conjunto",
+        options=opciones,
+        index=0
+    )
+    
+    # Obtener el ID del candidato seleccionado
+    if conjunto_seleccionado != "Seleccione un conjunto":
+        candidato_seleccionado = [k for k, v in candidatos.items() if v == conjunto_seleccionado][0]
+    else:
+        candidato_seleccionado = None
+    '''
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto"
     )
-
+    '''
 # ... resto del código ...
 
     if candidato_seleccionado:
