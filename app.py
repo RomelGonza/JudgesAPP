@@ -47,41 +47,69 @@ def main():
      #============================#
     st.markdown("""
         <style>
-            /* Prevenir la aparición del teclado y deshabilitar la entrada de texto */
+            /* Remover completamente el input */
             div[data-baseweb="select"] input {
-                pointer-events: none !important;
+                display: none !important;
+                width: 0px !important;
+                height: 0px !important;
                 opacity: 0 !important;
                 position: absolute !important;
-                z-index: -1 !important;
-                caret-color: transparent !important;
+                padding: 0 !important;
+                border: none !important;
+                pointer-events: none !important;
+            }
+            
+            /* Hacer el select no editable */
+            div[data-baseweb="select"] {
+                -webkit-user-modify: read-only !important;
+                -moz-user-modify: read-only !important;
+                user-modify: read-only !important;
+                -webkit-touch-callout: none !important;
                 -webkit-user-select: none !important;
+                -khtml-user-select: none !important;
                 -moz-user-select: none !important;
                 -ms-user-select: none !important;
                 user-select: none !important;
-                touch-action: none !important;
             }
             
-            /* Asegurar que el select sea solo clickeable */
-            div[data-baseweb="select"] {
-                cursor: pointer !important;
-                -webkit-tap-highlight-color: transparent !important;
-            }
-            
-            /* Mantener el scroll en la lista desplegable */
-            div[role="listbox"] {
-                overflow-y: auto !important;
-                max-height: 300px !important;
-                -webkit-overflow-scrolling: touch !important;
-            }
-            
-            /* Deshabilitar interacción con texto */
+            /* Prevenir interacciones de texto */
             div[data-baseweb="select"] * {
                 -webkit-user-select: none !important;
                 -moz-user-select: none !important;
                 -ms-user-select: none !important;
                 user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-tap-highlight-color: transparent !important;
+            }
+            
+            /* Asegurar que el contenedor sea solo clickeable */
+            div[data-baseweb="value-container"] {
+                cursor: pointer !important;
+                pointer-events: none !important;
+            }
+            
+            /* Mantener scroll táctil */
+            div[role="listbox"] {
+                overflow-y: auto !important;
+                max-height: 300px !important;
+                -webkit-overflow-scrolling: touch !important;
             }
         </style>
+    """, unsafe_allow_html=True)
+    
+    # Agregar JavaScript para prevenir el foco y el teclado
+    st.markdown("""
+        <script>
+            // Prevenir el foco en el input
+            document.addEventListener('DOMContentLoaded', function() {
+                const selectInputs = document.querySelectorAll('div[data-baseweb="select"] input');
+                selectInputs.forEach(input => {
+                    input.setAttribute('readonly', 'readonly');
+                    input.setAttribute('inputmode', 'none');
+                    input.style.display = 'none';
+                });
+            });
+        </script>
     """, unsafe_allow_html=True)
     
     #============================#
@@ -89,10 +117,11 @@ def main():
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     #============================#
-    candidato_seleccionado = st.radio(
+    candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
+        key="selector_no_input"
         #key="selector_conjunto"
     )
     #============================#
