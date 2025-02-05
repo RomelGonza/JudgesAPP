@@ -4,17 +4,22 @@ import time
 def check_password():
     """Returns `True` if the user had a correct password."""
     def password_entered():
-        if (
-            st.session_state["username"] in st.secrets["credentials"]["authorized_users"]
-            and st.session_state["password"]
-            == st.secrets["credentials"]["authorized_users"][st.session_state["username"]]
-        ):
-            st.session_state["password_correct"] = True
-            st.session_state["current_user"] = st.session_state["username"]
-            st.session_state["login_time"] = time.time()
-            del st.session_state["password"]
-            del st.session_state["username"]
-        else:
+        """Checks whether a password entered by the user is correct."""
+        try:
+            authorized_users = st.secrets["auth"]["authorized_users"]
+            if (
+                st.session_state["username"] in authorized_users
+                and st.session_state["password"] == authorized_users[st.session_state["username"]]
+            ):
+                st.session_state["password_correct"] = True
+                st.session_state["current_user"] = st.session_state["username"]
+                st.session_state["login_time"] = time.time()
+                del st.session_state["password"]
+                del st.session_state["username"]
+            else:
+                st.session_state["password_correct"] = False
+        except Exception as e:
+            st.error(f"Error de autenticación: {str(e)}")
             st.session_state["password_correct"] = False
 
     if "password_correct" not in st.session_state:
