@@ -44,6 +44,7 @@ def main():
 
     st.sidebar.write(f"Criterio de calificación: {criterio}")
 
+
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     candidato_seleccionado = st.selectbox(
@@ -52,8 +53,6 @@ def main():
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto"
     )
 
-# ... resto del código ...
-
     if candidato_seleccionado:
         try:
             # Obtener datos del conjunto
@@ -61,16 +60,24 @@ def main():
             datos = doc.to_dict()
     
             # Verificar si ya existe calificación
-            if verificar_calificacion_existente(db, candidato_seleccionado, jurado_num, datos['categoria']):
+            calificacion_existe, calificacion_actual = verificar_calificacion_existente(
+                db, 
+                candidato_seleccionado, 
+                jurado_num, 
+                datos['categoria']
+            )
+    
+            # Mostrar datos del conjunto
+            st.write("### Calificación")
+            st.write(f"Conjunto N°{datos['numero']}: {datos['nombre_del_conjunto']}")
+            st.write(f"Categoría: {datos['categoria']}")
+
+            if calificacion_existe:
                 st.warning("⚠️ Ya has calificado a este conjunto. No se permite modificar la calificación.")
                 # Mostrar la calificación existente
                 campo = obtener_campo_firebase(jurado_num, datos['categoria'])
                 st.info(f"Calificación enviada: {datos[campo]}")
             else:
-                st.write("### Calificación")
-                st.write(f"Conjunto: {datos['nombre_del_conjunto']}")
-                st.write(f"Categoría: {datos['categoria']}")
-    
                 # Input de calificación
                 if jurado_num in [10, 11, 12, 13]:
                     calificaciones = []
@@ -118,6 +125,5 @@ def main():
     
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
-
 if __name__ == "__main__":
     main()
