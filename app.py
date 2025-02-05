@@ -22,52 +22,9 @@ def main():
     # Ocultar absolutamente todos los elementos de navegación y GitHub
     st.markdown("""
         <style>
-            #MainMenu {visibility: hidden;}
+            
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            .css-1rs6os {visibility: hidden;}
-            .css-17ziqus {visibility: hidden;}
-            .css-1q1n0ol {visibility: hidden;}
-            .css-1vq4p4l {visibility: hidden;}
-            .css-1lsmgbg {visibility: hidden;}
-            .css-1dp5vir {visibility: hidden;}
-            .css-1f1ktqg {visibility: hidden;}
-            [data-testid="stToolbar"] {visibility: hidden !important;}
-            .stDeployButton {display: none;}
-            section[data-testid="stSidebar"] > div:nth-child(2) {
-                display: none;
-            }
-            .viewerBadge_container__1QSob {
-                display: none !important;
-            }
-            .styles_viewerBadge__1yB5_ {
-                display: none !important;
-            }
-            .viewerBadge_link__1S137 {
-                display: none !important;
-            }
-            .viewerBadge_text__1JaDK {
-                display: none !important;
-            }
-            a[href="https://streamlit.io/cloud"] {
-                display: none !important;
-            }
-            iframe[src*="streamlit.io"] {
-                display: none !important;
-            }
-            .stApp a:first-child {
-                display: none !important;
-            }
-            .css-1v3fvcr a {
-                display: none !important;
-            }
-            .css-1lsmgbg {display: none !important;}
-            .css-1rs6os {display: none !important;}
-            .css-17ziqus {display: none !important;}
-            .css-1q1n0ol {display: none !important;}
-            .css-1vq4p4l {display: none !important;}
-            .css-1dp5vir {display: none !important;}
-            .css-1f1ktqg {display: none !important;}
         </style>
     """, unsafe_allow_html=True)
     
