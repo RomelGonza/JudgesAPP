@@ -91,12 +91,15 @@ def get_max_score(criterio, categoria):
 
 def obtener_campo_firebase(jurado_num, categoria):
     """
-    Obtiene el nombre del campo en Firebase según el número de jurado y la categoría
+    Obtiene el nombre del campo en Firebase según el número de jurado y la categoría.
+    Para los jurados 1-9, el número se incluye en el nombre del campo.
+    Para los jurados 10-13, el nombre del campo es fijo.
     """
+    # Mapeo de rangos de jurados a sus sufijos de campo
     campos_por_jurado = {
-        (1, 2, 3): "v_calificacion_jurado_pv",  # Presentación y Vestimenta
-        (4, 5, 6): "v_calificacion_jurado_m",   # Música
-        (7, 8, 9): "v_calificacion_jurado_c",   # Coreografía
+        (1, 2, 3): "v_calificacion_jurado{}_pv",  # Presentación y Vestimenta
+        (4, 5, 6): "v_calificacion_jurado{}_m",   # Música
+        (7, 8, 9): "v_calificacion_jurado{}_c",   # Coreografía
         (10,): "v_calificacion_jurado_mc",      # Música (danzarines y músicos)
         (11,): "v_calificacion_jurado_v",       # Vestimenta
         (12,): "v_calificacion_jurado_pdl",     # Recorrido
@@ -104,9 +107,13 @@ def obtener_campo_firebase(jurado_num, categoria):
     }
     
     # Encontrar el campo correspondiente al número de jurado
-    for jurados, campo in campos_por_jurado.items():
+    for jurados, campo_template in campos_por_jurado.items():
         if jurado_num in jurados:
-            return campo
+            # Si es uno de los primeros 9 jurados, incluir el número en el nombre del campo
+            if jurado_num <= 9:
+                return campo_template.format(jurado_num)
+            # Para los jurados 10-13, usar el nombre fijo
+            return campo_template
             
     raise ValueError(f"No se encontró campo para el jurado {jurado_num}")
 
