@@ -112,7 +112,7 @@ def main():
                     <style>
                         div.stButton > button {
                             background-color: #28a745;
-                            color: white;
+                            color: white !important;
                             border: none;
                             padding: 0.5rem 1rem;
                             font-size: 1rem;
@@ -120,16 +120,19 @@ def main():
                         }
                         div.stButton > button:hover {
                             background-color: #218838;
+                            color: white !important;
                             border: none;
                         }
-                        div.stButton > button:active, div.stButton > button:focus {
+                        div.stButton > button:active, 
+                        div.stButton > button:focus,
+                        div.stButton > button:focus:not(:active) {
                             background-color: #1e7e34;
+                            color: white !important;
                             border: none;
                             box-shadow: none;
                         }
-                        ::selection {
-                            background: #ffff00; 
-                            color: black;
+                        div.stButton > button:visited {
+                            color: white !important;
                         }
                     </style>
                 """, unsafe_allow_html=True)
