@@ -89,7 +89,7 @@ def main():
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     #============================#
-    candidato_seleccionado = st.selectbox(
+    candidato_seleccionado = st.radio(
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
