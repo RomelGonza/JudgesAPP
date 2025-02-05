@@ -53,6 +53,7 @@ def main():
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto"
     )
 
+
     if candidato_seleccionado:
         try:
             # Obtener datos del conjunto
@@ -60,12 +61,7 @@ def main():
             datos = doc.to_dict()
     
             # Verificar si ya existe calificación
-            calificacion_existe, calificacion_actual = verificar_calificacion_existente(
-                db, 
-                candidato_seleccionado, 
-                jurado_num, 
-                datos['categoria']
-            )
+            calificacion_existe = verificar_calificacion_existente(db, candidato_seleccionado, jurado_num, datos['categoria'])
     
             # Mostrar datos del conjunto
             st.write("### Calificación")
@@ -125,5 +121,6 @@ def main():
     
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
+            
 if __name__ == "__main__":
     main()
