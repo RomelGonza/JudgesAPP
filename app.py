@@ -44,60 +44,19 @@ def main():
 
     st.sidebar.write(f"Criterio de calificación: {criterio}")
 
+    
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
-    
-    # CSS para deshabilitar la entrada de texto en el selectbox
-    st.markdown("""
-        <style>
-            /* Ocultar el input de búsqueda */
-            div[data-baseweb="select"] input {
-                display: none !important;
-            }
-            
-            /* Estilo para el contenedor del select */
-            div[data-baseweb="select"] {
-                cursor: pointer !important;
-            }
-            
-            /* Estilo para las opciones */
-            div[role="listbox"] {
-                max-height: 300px !important;
-                overflow-y: auto !important;
-            }
-            
-            /* Deshabilitar interacción con texto */
-            div[data-baseweb="select"] * {
-                -webkit-user-select: none !important;
-                user-select: none !important;
-            }
-            
-            /* Estilo para opciones al pasar el mouse */
-            div[role="option"]:hover {
-                background-color: #e6e6e6 !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Crear diccionario de opciones
-    opciones_dict = {"": "Seleccione un conjunto"}
-    
-    # Obtener documentos y sus datos
-    docs = db.collection("Agrupaciones_dia1").stream()
-    for doc in docs:
-        datos = doc.to_dict()
-        opciones_dict[doc.id] = f"N°{datos.get('numero', 'S/N')} - {datos.get('nombre_del_conjunto', 'Sin nombre')}"
-    
-    # Selectbox no editable
+    #============================#
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
-        options=list(opciones_dict.keys()),
-        format_func=lambda x: opciones_dict[x],
+        options=[c[0] for c in candidatos],
+        format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
         key="selector_conjunto"
     )
+    #============================#
 
-    # Resto del código igual...
-    if candidato_seleccionado and candidato_seleccionado != "":
+    if candidato_seleccionado:
         try:
             # Obtener datos del conjunto
             doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
@@ -113,6 +72,7 @@ def main():
 
             if calificacion_existe:
                 st.warning("⚠️ Ya has calificado a este conjunto. No se permite modificar la calificación.")
+                # Mostrar la calificación existente
                 campo = obtener_campo_firebase(jurado_num, datos['categoria'])
                 st.info(f"Calificación enviada: {datos[campo]}")
             else:
@@ -163,6 +123,6 @@ def main():
     
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
-
+            
 if __name__ == "__main__":
     main()
