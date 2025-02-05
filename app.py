@@ -24,8 +24,7 @@ def main():
             header {visibility: hidden;}
         </style>
     """, unsafe_allow_html=True)    
-    # Ocultar todos los elementos de GitHub y menú
-    # Ocultar absolutamente todos los elementos de navegación y GitHub
+
 
     
     # Autenticación
@@ -68,7 +67,7 @@ def main():
     if candidato_seleccionado:
         try:
             # Obtener datos del conjunto
-            doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
+            doc = db.collection("luces_day_one").document(candidato_seleccionado).get()
             datos = doc.to_dict()
     
             # Verificar si ya existe calificación
