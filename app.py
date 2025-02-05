@@ -56,13 +56,6 @@ def main():
     
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
-    '''
-    candidato_seleccionado = st.selectbox(
-        "Seleccione un conjunto",
-        options=[c[0] for c in candidatos],
-        format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto"
-    )
-    '''
     #============================#
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
