@@ -7,7 +7,7 @@ from src.utils import (
     get_max_score,
     obtener_campo_firebase,
     cargar_candidatos,
-    actualizar_calificacion
+    actualizar_calificacion,
     verificar_calificacion_existente
 )
 
