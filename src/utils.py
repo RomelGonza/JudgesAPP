@@ -140,3 +140,22 @@ def actualizar_calificacion(db, candidato_id, jurado_num, calificaciones, catego
     except Exception as e:
         st.error(f"Error al actualizar calificación: {e}")
         return False
+def verificar_calificacion_existente(db, candidato_id, jurado_num, categoria):
+    """
+    Verifica si ya existe una calificación para este jurado y candidato
+    """
+    try:
+        # Obtener el documento del candidato
+        doc = db.collection("Agrupaciones_dia1").document(candidato_id).get()
+        if not doc.exists:
+            return False
+
+        # Obtener el campo correspondiente
+        campo = obtener_campo_firebase(jurado_num, categoria)
+        datos = doc.to_dict()
+        
+        # Verificar si ya existe una calificación
+        return campo in datos and datos[campo] is not None
+    except Exception as e:
+        st.error(f"Error al verificar calificación existente: {e}")
+        return False
