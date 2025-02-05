@@ -48,7 +48,7 @@ def main():
     st.markdown("""
         <style>
         div[data-baseweb="select"] > div:first-child {
-            pointer-events: none;
+            pointer-events: auto;
         }
         </style>
     """, unsafe_allow_html=True)    
