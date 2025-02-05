@@ -94,9 +94,9 @@ def obtener_campo_firebase(jurado_num, categoria):
     Obtiene el nombre del campo en Firebase según el número de jurado y la categoría
     """
     campos_por_jurado = {
-        (1, 2, 3): "v_calificacion_jurado_pv",  # Presentación y Vestimenta
-        (4, 5, 6): "v_calificacion_jurado_m",   # Música
-        (7, 8, 9): "v_calificacion_jurado_c",   # Coreografía
+        (1, 2, 3): "v_calificacion_jurado{}_pv",  # Presentación y Vestimenta
+        (4, 5, 6): "v_calificacion_jurado{}_m",   # Música
+        (7, 8, 9): "v_calificacion_jurado{}_c",   # Coreografía
         (10,): "v_calificacion_jurado_mc",      # Música (danzarines y músicos)
         (11,): "v_calificacion_jurado_v",       # Vestimenta
         (12,): "v_calificacion_jurado_pdl",     # Recorrido
