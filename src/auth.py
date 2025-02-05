@@ -1,23 +1,33 @@
 import streamlit as st
 import firebase_admin
-from firebase_admin import auth
-import pyrebase
+from firebase_admin import auth, credentials
+import time
 
 def init_auth():
-    """Inicializa la configuración de Firebase Authentication"""
-    firebase_config = {
-        "apiKey": st.secrets["firebase"]["api_key"],
-        "authDomain": st.secrets["firebase"]["auth_domain"],
-        "projectId": st.secrets["firebase"]["project_id"],
-        "storageBucket": st.secrets["firebase"]["storage_bucket"],
-        "messagingSenderId": st.secrets["firebase"]["messaging_sender_id"],
-        "appId": st.secrets["firebase"]["app_id"],
-        "databaseURL": st.secrets["firebase"]["database_url"]
-    }
-    return pyrebase.initialize_app(firebase_config)
+    """Inicializa Firebase Authentication"""
+    if not firebase_admin._apps:
+        try:
+            cred_dict = {
+                "type": st.secrets["firebase"]["type"],
+                "project_id": st.secrets["firebase"]["project_id"],
+                "private_key_id": st.secrets["firebase"]["private_key_id"],
+                "private_key": st.secrets["firebase"]["private_key"],
+                "client_email": st.secrets["firebase"]["client_email"],
+                "client_id": st.secrets["firebase"]["client_id"],
+                "auth_uri": st.secrets["firebase"]["auth_uri"],
+                "token_uri": st.secrets["firebase"]["token_uri"],
+                "auth_provider_x509_cert_url": st.secrets["firebase"]["auth_provider_x509_cert_url"],
+                "client_x509_cert_url": st.secrets["firebase"]["client_x509_cert_url"]
+            }
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+        except Exception as e:
+            st.error(f"Error al inicializar Firebase: {str(e)}")
+            return False
+    return True
 
 def login():
-    """Maneja el proceso de login con Firebase"""
+    """Maneja el proceso de login"""
     if 'user' not in st.session_state:
         st.session_state.user = None
 
@@ -30,40 +40,27 @@ def login():
         with col2:
             password = st.text_input("Contraseña", type="password")
 
-        col1, col2, col3 = st.columns([1,1,1])
-        with col1:
-            if st.button("Iniciar Sesión", use_container_width=True):
-                try:
-                    firebase = init_auth()
-                    auth = firebase.auth()
-                    user = auth.sign_in_with_email_and_password(email, password)
-                    
-                    # Verificar email
-                    user_info = auth.get_account_info(user['idToken'])
-                    email_verified = user_info['users'][0]['emailVerified']
-                    
-                    if email_verified:
+        if st.button("Iniciar Sesión", use_container_width=True):
+            try:
+                # Verificar credenciales contra Firebase
+                user = auth.get_user_by_email(email)
+                
+                # Aquí deberías verificar la contraseña de forma segura
+                # Por ahora, usaremos una lista de usuarios autorizados en secrets
+                if email in st.secrets["auth"]["authorized_users"]:
+                    if password == st.secrets["auth"]["authorized_users"][email]:
                         st.session_state.user = user
                         st.session_state.user_email = email
                         st.success("¡Inicio de sesión exitoso!")
+                        time.sleep(1)
                         st.experimental_rerun()
                     else:
-                        st.error("Por favor verifica tu email antes de iniciar sesión")
-                except Exception as e:
-                    st.error("Error en el inicio de sesión. Verifica tus credenciales.")
-        
-        with col2:
-            if st.button("¿Olvidaste tu contraseña?", use_container_width=True):
-                if email:
-                    try:
-                        firebase = init_auth()
-                        auth = firebase.auth()
-                        auth.send_password_reset_email(email)
-                        st.success("Se ha enviado un email para restablecer tu contraseña")
-                    except:
-                        st.error("Error al enviar el email de recuperación")
+                        st.error("Contraseña incorrecta")
                 else:
-                    st.warning("Por favor ingresa tu email primero")
+                    st.error("Usuario no autorizado")
+            except Exception as e:
+                st.error("Error en el inicio de sesión. Verifica tus credenciales.")
+                st.error(f"Detalles: {str(e)}")
 
     return st.session_state.user is not None
 
@@ -72,6 +69,7 @@ def logout():
     st.session_state.user = None
     st.session_state.user_email = None
     st.success("Sesión cerrada exitosamente")
+    time.sleep(1)
     st.experimental_rerun()
 
 def check_session():
