@@ -20,13 +20,7 @@ def main():
     
     # Ocultar todos los elementos de GitHub y menú
     # Ocultar absolutamente todos los elementos de navegación y GitHub
-    st.markdown("""
-        <style>
-            
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-        </style>
-    """, unsafe_allow_html=True)
+
     
     # Autenticación
     if not check_session():
