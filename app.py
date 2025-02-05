@@ -47,12 +47,14 @@ def main():
      #============================#
     st.markdown("""
         <style>
-        div[data-baseweb="select"] > div:first-child {
-            pointer-events: auto;
-            user-select: none;
-        }
+            div[data-baseweb="select"] input {
+                display: none;
+            }
+            div[data-baseweb="select"] > div {
+                cursor: pointer;
+            }
         </style>
-    """, unsafe_allow_html=True)    
+    """, unsafe_allow_html=True)
     #============================#
     
     # Cargar y mostrar candidatos
@@ -62,7 +64,7 @@ def main():
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
-        key="selector_conjunto"
+        #key="selector_conjunto"
     )
     #============================#
 
