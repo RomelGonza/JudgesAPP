@@ -27,9 +27,18 @@ def init_firebase_auth():
             return False
     return True
 
+def check_credentials(email, password):
+    """Verifica las credenciales contra los secrets"""
+    auth_users = st.secrets["auth"]["authorized_users"]
+    for i in range(1, 14):  # Para jurados del 1 al 13
+        stored_email = auth_users.get(f"jurado{i}_email")
+        stored_password = auth_users.get(f"jurado{i}_password")
+        if email == stored_email and password == stored_password:
+            return True
+    return False
+
 def login():
     """Maneja el proceso de login"""
-    # Inicializar Firebase antes de cualquier operación
     if not init_firebase_auth():
         st.error("Error al inicializar la autenticación")
         return False
@@ -46,27 +55,21 @@ def login():
         with col2:
             password = st.text_input("Contraseña", type="password")
 
-        if st.button("Iniciar Sesión", use_container_width=True):
+        if st.button("Iniciar Sesión"):
             try:
-                # Verificar si el usuario existe en Firebase
-                user = auth.get_user_by_email(email)
-                
-                # Verificar credenciales contra los secrets
-                if email in st.secrets["auth"]["authorized_users"]:
-                    if password == st.secrets["auth"]["authorized_users"][email]:
-                        st.session_state.user = user
-                        st.session_state.user_email = email
-                        st.success("¡Inicio de sesión exitoso!")
-                        time.sleep(1)
-                        st.experimental_rerun()
-                    else:
-                        st.error("Contraseña incorrecta")
+                # Primero verificamos las credenciales locales
+                if check_credentials(email, password):
+                    # Si las credenciales son correctas, verificamos en Firebase
+                    user = auth.get_user_by_email(email)
+                    st.session_state.user = user
+                    st.session_state.user_email = email
+                    st.success("¡Inicio de sesión exitoso!")
+                    time.sleep(1)
+                    st.experimental_rerun()
                 else:
-                    st.error("Usuario no autorizado")
-            except auth.UserNotFoundError:
-                st.error("Usuario no encontrado")
+                    st.error("Usuario o contraseña incorrectos")
             except Exception as e:
-                st.error("Error en el inicio de sesión. Verifica tus credenciales.")
+                st.error("Error en el inicio de sesión")
                 st.error(f"Detalles: {str(e)}")
 
     return st.session_state.user is not None
