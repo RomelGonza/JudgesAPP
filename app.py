@@ -86,40 +86,76 @@ def main():
                             min_value=0.0,
                             max_value=10.0,
                             step=0.5,
+                            value=None
+                            placeholder="Ingrese calificación",
                             key=f"cal_{criterio}"
                         )
                         calificaciones.append(cal)
+
+                #a
                 else:
-                    max_valor = get_max_score(criterio, datos['categoria'])
-                    calificacion = st.number_input(
-                        f"Calificación - {criterio}",
-                        min_value=0.0,
-                        max_value=float(max_valor),
-                        step=0.5
-                    )
-                    calificaciones = [calificacion]
-    
-                # Botón de envío
-                if st.button("Enviar Calificación"):
-                    if st.session_state.get('confirmacion', False):
-                        try:
-                            exito = actualizar_calificacion(
-                                db,
-                                candidato_seleccionado,
-                                jurado_num,
-                                calificaciones,
-                                datos['categoria']
+                    # Input de calificación
+                    if jurado_num in [10, 11, 12, 13]:
+                        calificaciones = []
+                        criterios = obtener_subcriterios(jurado_num)
+                        for criterio in criterios:
+                            # Usar None como valor por defecto
+                            cal = st.number_input(
+                                f"Calificación - {criterio}",
+                                min_value=0.0,
+                                max_value=10.0,
+                                step=0.5,
+                                value=None,  # Valor inicial None
+                                placeholder="Ingrese calificación",
+                                key=f"cal_{criterio}"
                             )
-                            if exito:
-                                st.success("✅ Calificación enviada correctamente")
-                                st.session_state.confirmacion = False
-                                st.rerun()
-                        except Exception as e:
-                            st.error(f"Error al enviar calificación: {e}")
+                            # Solo agregar la calificación si se ha ingresado un valor
+                            if cal is not None:
+                                calificaciones.append(cal)
                     else:
-                        st.session_state.confirmacion = True
-                        st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
-                        st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
+                        max_valor = get_max_score(criterio, datos['categoria'])
+                        # Usar None como valor por defecto
+                        calificacion = st.number_input(
+                            f"Calificación - {criterio}",
+                            min_value=0.0,
+                            max_value=float(max_valor),
+                            step=0.5,
+                            value=None,  # Valor inicial None
+                            placeholder="Ingrese calificación",
+                            key=f"cal_single"
+                        )
+                        calificaciones = [calificacion] if calificacion is not None else []
+        
+                    # Botón de envío - solo habilitarlo si hay calificaciones
+                    if len(calificaciones) > 0:
+                        if st.button("Enviar Calificación"):
+                            if st.session_state.get('confirmacion', False):
+                                try:
+                                    # Verificar que todas las calificaciones estén ingresadas
+                                    if jurado_num in [10, 11, 12, 13] and len(calificaciones) != len(criterios):
+                                        st.error("Por favor, ingrese todas las calificaciones antes de enviar.")
+                                        st.session_state.confirmacion = False
+                                        return
+                                    
+                                    exito = actualizar_calificacion(
+                                        db,
+                                        candidato_seleccionado,
+                                        jurado_num,
+                                        calificaciones,
+                                        datos['categoria']
+                                    )
+                                    if exito:
+                                        st.success("✅ Calificación enviada correctamente")
+                                        st.session_state.confirmacion = False
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error al enviar calificación: {e}")
+                            else:
+                                st.session_state.confirmacion = True
+                                st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
+                                st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
+                    else:
+                        st.info("Por favor, ingrese una calificación para poder enviar.")
     
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
