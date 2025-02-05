@@ -4,6 +4,8 @@ from src.firebase_config import init_firebase
 from src.utils import (
     obtener_numero_jurado,
     obtener_criterio_calificacion,
+    get_max_score,
+    obtener_campo_firebase,
     cargar_candidatos,
     actualizar_calificacion
 )
