@@ -34,14 +34,26 @@ def obtener_criterio_calificacion(jurado_num):
     return "CRITERIO NO ASIGNADO"
 
 def cargar_candidatos(db):
-    """Carga los candidatos desde Firebase"""
+    """
+    Carga la lista de candidatos desde Firebase y los enumera
+    """
     try:
-        candidatos_ref = db.collection("Agrupaciones_dia1").order_by("numero").stream()
-        return [(c.id, f"{c.to_dict()['nombre_del_conjunto']} (N° {c.to_dict()['numero']})") 
-                for c in candidatos_ref]
+        candidatos = {}
+        docs = db.collection("Agrupaciones_dia1").stream()
+        
+        # Convertir a lista y ordenar por nombre del conjunto
+        conjuntos = [(doc.id, doc.to_dict().get('nombre_del_conjunto', 'Sin nombre')) 
+                     for doc in docs]
+        conjuntos.sort(key=lambda x: x[1])  # Ordenar por nombre
+        
+        # Enumerar los conjuntos
+        for i, (doc_id, nombre) in enumerate(conjuntos, 1):
+            candidatos[doc_id] = f"{i}. {nombre}"
+            
+        return candidatos
     except Exception as e:
         st.error(f"Error al cargar candidatos: {e}")
-        return []
+        return {}
 
 def get_max_score(criterio, categoria):
     """
