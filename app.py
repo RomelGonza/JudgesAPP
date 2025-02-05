@@ -17,7 +17,13 @@ def main():
         layout="wide",
         initial_sidebar_state="collapsed"
     )
-    
+    st.markdown("""
+        <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+        </style>
+    """, unsafe_allow_html=True)    
     # Ocultar todos los elementos de GitHub y menú
     # Ocultar absolutamente todos los elementos de navegación y GitHub
 
