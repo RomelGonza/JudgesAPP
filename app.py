@@ -45,13 +45,36 @@ def main():
     st.sidebar.write(f"Criterio de calificación: {criterio}")
     
      #============================#
+
     st.markdown("""
         <style>
+            /* Ocultar el input de búsqueda pero mantener la funcionalidad del select */
             div[data-baseweb="select"] input {
-                display: none;
+                opacity: 0;
+                height: 0;
+                position: absolute;
+                z-index: -1;
             }
+            
+            /* Mantener el cursor pointer y el scroll */
             div[data-baseweb="select"] > div {
                 cursor: pointer;
+            }
+            
+            /* Asegurar que el menú desplegable sea scrolleable */
+            div[data-baseweb="popover"] > div {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            /* Estilo para los items del menú */
+            div[data-baseweb="menu"] {
+                max-height: none;
+            }
+            
+            div[role="listbox"] {
+                overflow-y: auto;
+                max-height: 300px;
             }
         </style>
     """, unsafe_allow_html=True)
