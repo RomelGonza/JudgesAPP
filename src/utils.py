@@ -44,33 +44,71 @@ def cargar_candidatos(db):
         return []
 
 def get_max_score(criterio, categoria):
-    """Obtiene el puntaje máximo según criterio y categoría"""
-    limites = {
+    """
+    Obtiene el puntaje máximo según el criterio y la categoría
+    """
+    puntajes_maximos = {
         "PRESENTACION Y VESTIMENTA": {
+            "CARNAVALEZCAS LIGERAS": 20,
             "SIKURIS DE UN SOLO BOMBO": 20,
             "SIKURIS VARIOS BOMBOS": 20,
             "AYARACHIS, ISLA SIKURIS Y KANTU": 20,
             "default": 20
         },
         "MUSICA": {
+            "CARNAVALEZCAS LIGERAS": 30,
             "SIKURIS DE UN SOLO BOMBO": 30,
             "SIKURIS VARIOS BOMBOS": 30,
             "AYARACHIS, ISLA SIKURIS Y KANTU": 30,
-            "default": 20
+            "default": 30
         },
         "COREOGRAFIA": {
+            "CARNAVALEZCAS LIGERAS": 20,
             "SIKURIS DE UN SOLO BOMBO": 20,
             "SIKURIS VARIOS BOMBOS": 20,
             "AYARACHIS, ISLA SIKURIS Y KANTU": 20,
-            "default": 30
+            "default": 20
         },
-        "MUSICA(danzarines y musicos)": {"default": 10},
-        "VESTIMENTA(danzarines y musicos)": {"default": 10},
-        "RECORRIDO(desplazamiento)": {"default": 7},
-        "Brigada Ecologica": {"default": 3},
+        "MUSICA(danzarines y musicos)": {
+            "default": 10
+        },
+        "VESTIMENTA(danzarines y musicos)": {
+            "default": 10
+        },
+        "RECORRIDO(desplazamiento)": {
+            "default": 7
+        },
+        "Brigada Ecologica": {
+            "default": 3
+        }
     }
-    criterio_limits = limites.get(criterio, {"default": 30})
-    return criterio_limits.get(categoria.upper(), criterio_limits["default"])
+    
+    # Obtener los puntajes para el criterio específico
+    criterio_puntajes = puntajes_maximos.get(criterio, {"default": 30})
+    
+    # Obtener el puntaje máximo para la categoría específica o usar el valor por defecto
+    return criterio_puntajes.get(categoria, criterio_puntajes["default"])
+
+def obtener_campo_firebase(jurado_num, categoria):
+    """
+    Obtiene el nombre del campo en Firebase según el número de jurado y la categoría
+    """
+    campos_por_jurado = {
+        (1, 2, 3): "v_calificacion_jurado_pv",  # Presentación y Vestimenta
+        (4, 5, 6): "v_calificacion_jurado_m",   # Música
+        (7, 8, 9): "v_calificacion_jurado_c",   # Coreografía
+        (10,): "v_calificacion_jurado_mc",      # Música (danzarines y músicos)
+        (11,): "v_calificacion_jurado_v",       # Vestimenta
+        (12,): "v_calificacion_jurado_pdl",     # Recorrido
+        (13,): "v_calificacion_jurado_ci"       # Brigada Ecológica
+    }
+    
+    # Encontrar el campo correspondiente al número de jurado
+    for jurados, campo in campos_por_jurado.items():
+        if jurado_num in jurados:
+            return campo
+            
+    raise ValueError(f"No se encontró campo para el jurado {jurado_num}")
 
 def actualizar_calificacion(db, candidato_id, jurado_num, calificaciones, categoria):
     """Actualiza la calificación en Firebase"""
