@@ -51,24 +51,29 @@ def main():
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto"
     )
 
+# ... resto del código ...
+
     if candidato_seleccionado:
         try:
-            candidato_doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
-            if candidato_doc.exists:
-                datos = candidato_doc.to_dict()
-                
-                # Mostrar información del conjunto
-                col1, col2 = st.columns([1, 3])
-                with col1:
-                    st.markdown(f"### N° {datos['numero']}")
-                with col2:
-                    st.markdown(f"**Conjunto:** {datos['nombre_del_conjunto']}")
-                    st.markdown(f"**Categoría:** {datos['categoria']}")
-
-                # Sistema de calificación
+            # Obtener datos del conjunto
+            doc = db.collection("Agrupaciones_dia1").document(candidato_seleccionado).get()
+            datos = doc.to_dict()
+    
+            # Verificar si ya existe calificación
+            if verificar_calificacion_existente(db, candidato_seleccionado, jurado_num, datos['categoria']):
+                st.warning("⚠️ Ya has calificado a este conjunto. No se permite modificar la calificación.")
+                # Mostrar la calificación existente
+                campo = obtener_campo_firebase(jurado_num, datos['categoria'])
+                st.info(f"Calificación enviada: {datos[campo]}")
+            else:
+                st.write("### Calificación")
+                st.write(f"Conjunto: {datos['nombre_del_conjunto']}")
+                st.write(f"Categoría: {datos['categoria']}")
+    
+                # Input de calificación
                 if jurado_num in [10, 11, 12, 13]:
                     calificaciones = []
-                    criterios = ["MUSICA", "VESTIMENTA", "RECORRIDO", "Brigada Ecologica"]
+                    criterios = obtener_subcriterios(jurado_num)
                     for criterio in criterios:
                         cal = st.number_input(
                             f"Calificación - {criterio}",
@@ -87,7 +92,7 @@ def main():
                         step=0.5
                     )
                     calificaciones = [calificacion]
-
+    
                 # Botón de envío
                 if st.button("Enviar Calificación"):
                     if st.session_state.get('confirmacion', False):
@@ -100,15 +105,16 @@ def main():
                                 datos['categoria']
                             )
                             if exito:
-                                st.success("Calificación enviada correctamente")
+                                st.success("✅ Calificación enviada correctamente")
                                 st.session_state.confirmacion = False
                                 st.rerun()
                         except Exception as e:
                             st.error(f"Error al enviar calificación: {e}")
                     else:
                         st.session_state.confirmacion = True
-                        st.warning("¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
-
+                        st.warning("⚠️ ¿Está seguro de enviar esta calificación? Presione nuevamente para confirmar.")
+                        st.info("⚠️ Recuerde que una vez enviada la calificación, no podrá modificarla.")
+    
         except Exception as e:
             st.error(f"Error al cargar datos del conjunto: {e}")
 
