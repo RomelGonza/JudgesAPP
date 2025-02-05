@@ -127,6 +127,10 @@ def main():
                             border: none;
                             box-shadow: none;
                         }
+                        ::selection {
+                            background: #ffff00; 
+                            color: black;
+                        }
                     </style>
                 """, unsafe_allow_html=True)
                 
