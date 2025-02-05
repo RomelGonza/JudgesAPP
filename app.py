@@ -49,6 +49,7 @@ def main():
         <style>
         div[data-baseweb="select"] > div:first-child {
             pointer-events: auto;
+            user-select: none;
         }
         </style>
     """, unsafe_allow_html=True)    
