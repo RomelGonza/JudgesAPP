@@ -35,25 +35,25 @@ def obtener_criterio_calificacion(jurado_num):
 
 def cargar_candidatos(db):
     """
-    Carga la lista de candidatos desde Firebase y los enumera
+    Carga la lista de candidatos desde Firebase incluyendo el número del conjunto
     """
     try:
-        candidatos = {}
+        candidatos = []
         docs = db.collection("Agrupaciones_dia1").stream()
         
-        # Convertir a lista y ordenar por nombre del conjunto
-        conjuntos = [(doc.id, doc.to_dict().get('nombre_del_conjunto', 'Sin nombre')) 
-                     for doc in docs]
-        conjuntos.sort(key=lambda x: x[1])  # Ordenar por nombre
-        
-        # Enumerar los conjuntos
-        for i, (doc_id, nombre) in enumerate(conjuntos, 1):
-            candidatos[doc_id] = f"{i}. {nombre}"
+        for doc in docs:
+            datos = doc.to_dict()
+            numero = datos.get('numero', 'S/N')  # Obtiene el número del conjunto
+            nombre = datos.get('nombre_del_conjunto', 'Sin nombre')
+            # Guarda una tupla con (id, nombre_con_numero)
+            candidatos.append((doc.id, f"N°{numero} - {nombre}"))
             
+        # Ordenar por número de conjunto
+        candidatos.sort(key=lambda x: int(x[1].split('°')[1].split(' -')[0]))
         return candidatos
     except Exception as e:
         st.error(f"Error al cargar candidatos: {e}")
-        return {}
+        return []
 
 def get_max_score(criterio, categoria):
     """
