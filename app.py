@@ -43,76 +43,7 @@ def main():
     criterio = obtener_criterio_calificacion(jurado_num)
 
     st.sidebar.write(f"Criterio de calificación: {criterio}")
-    
-     #============================#
-    st.markdown("""
-        <style>
-            /* Remover completamente el input */
-            div[data-baseweb="select"] input {
-                display: none !important;
-                width: 0px !important;
-                height: 0px !important;
-                opacity: 0 !important;
-                position: absolute !important;
-                padding: 0 !important;
-                border: none !important;
-                pointer-events: none !important;
-            }
-            
-            /* Hacer el select no editable */
-            div[data-baseweb="select"] {
-                -webkit-user-modify: read-only !important;
-                -moz-user-modify: read-only !important;
-                user-modify: read-only !important;
-                -webkit-touch-callout: none !important;
-                -webkit-user-select: none !important;
-                -khtml-user-select: none !important;
-                -moz-user-select: none !important;
-                -ms-user-select: none !important;
-                user-select: none !important;
-            }
-            
-            /* Prevenir interacciones de texto */
-            div[data-baseweb="select"] * {
-                -webkit-user-select: none !important;
-                -moz-user-select: none !important;
-                -ms-user-select: none !important;
-                user-select: none !important;
-                -webkit-touch-callout: none !important;
-                -webkit-tap-highlight-color: transparent !important;
-            }
-            
-            /* Asegurar que el contenedor sea solo clickeable */
-            div[data-baseweb="value-container"] {
-                cursor: pointer !important;
-                pointer-events: none !important;
-            }
-            
-            /* Mantener scroll táctil */
-            div[role="listbox"] {
-                overflow-y: auto !important;
-                max-height: 300px !important;
-                -webkit-overflow-scrolling: touch !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Agregar JavaScript para prevenir el foco y el teclado
-    st.markdown("""
-        <script>
-            // Prevenir el foco en el input
-            document.addEventListener('DOMContentLoaded', function() {
-                const selectInputs = document.querySelectorAll('div[data-baseweb="select"] input');
-                selectInputs.forEach(input => {
-                    input.setAttribute('readonly', 'readonly');
-                    input.setAttribute('inputmode', 'none');
-                    input.style.display = 'none';
-                });
-            });
-        </script>
-    """, unsafe_allow_html=True)
-    
-    #============================#
+
     
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
@@ -121,8 +52,7 @@ def main():
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
         format_func=lambda x: dict(candidatos)[x] if x else "Seleccione un conjunto",
-        key="selector_no_input"
-        #key="selector_conjunto"
+        key="selector_conjunto"
     )
     #============================#
 
