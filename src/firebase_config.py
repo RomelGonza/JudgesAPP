@@ -6,7 +6,6 @@ def init_firebase():
     """Inicializa la conexión con Firebase"""
     if not firebase_admin._apps:
         try:
-            # Crear el diccionario de credenciales
             cred_dict = {
                 "type": st.secrets["firebase"]["type"],
                 "project_id": st.secrets["firebase"]["project_id"],
