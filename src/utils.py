@@ -61,25 +61,23 @@ def get_max_score(criterio, categoria):
     """
     puntajes_maximos = {
         "PRESENTACION Y VESTIMENTA": {
-            "CARNAVALEZCAS LIGERAS": 20,
-            "SIKURIS DE UN SOLO BOMBO": 20,
-            "SIKURIS VARIOS BOMBOS": 20,
-            "AYARACHIS, ISLA SIKURIS Y KANTU": 20,
-            "default": 20
+            "SIKURIS DE UN SOLO BOMBO": 15,
+            "SIKURIS VARIOS BOMBOS": 15,
+            "AYARACHIS, ISLA SIKUS Y KHANTUS": 15,
+            "default": 15
         },
         "MUSICA": {
-            "CARNAVALEZCAS LIGERAS": 30,
-            "SIKURIS DE UN SOLO BOMBO": 30,
-            "SIKURIS VARIOS BOMBOS": 30,
-            "AYARACHIS, ISLA SIKURIS Y KANTU": 30,
-            "default": 30
+            "SIKURIS DE UN SOLO BOMBO": 15,
+            "SIKURIS VARIOS BOMBOS": 15,
+            "AYARACHIS, ISLA SIKUS Y KHANTUS": 15,
+            "default": 15
         },
         "COREOGRAFIA": {
-            "CARNAVALEZCAS LIGERAS": 20,
-            "SIKURIS DE UN SOLO BOMBO": 20,
-            "SIKURIS VARIOS BOMBOS": 20,
-            "AYARACHIS, ISLA SIKURIS Y KANTU": 20,
-            "default": 20
+            "CARNAVALEZCAS LIGERAS": 40,
+            "SIKURIS DE UN SOLO BOMBO": 40,
+            "SIKURIS VARIOS BOMBOS": 40,
+            "AYARACHIS, ISLA SIKUS Y KHANTUS": 40,
+            "default": 40
         },
         "MUSICA(danzarines y musicos)": {
             "default": 10
