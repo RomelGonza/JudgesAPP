@@ -67,16 +67,15 @@ def get_max_score(criterio, categoria):
             "default": 15
         },
         "MUSICA": {
-            "SIKURIS DE UN SOLO BOMBO": 15,
-            "SIKURIS VARIOS BOMBOS": 15,
-            "AYARACHIS, ISLA SIKUS Y KHANTUS": 15,
-            "default": 15
-        },
-        "COREOGRAFIA": {
-            "CARNAVALEZCAS LIGERAS": 40,
             "SIKURIS DE UN SOLO BOMBO": 40,
             "SIKURIS VARIOS BOMBOS": 40,
             "AYARACHIS, ISLA SIKUS Y KHANTUS": 40,
+            "default": 15
+        },
+        "COREOGRAFIA": {
+            "SIKURIS DE UN SOLO BOMBO": 15,
+            "SIKURIS VARIOS BOMBOS": 15,
+            "AYARACHIS, ISLA SIKUS Y KHANTUS": 15,
             "default": 40
         },
         "MUSICA(danzarines y musicos)": {
