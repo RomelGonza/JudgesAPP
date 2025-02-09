@@ -202,3 +202,15 @@ def obtener_subcriterios(jurado_num):
         13: ["Vestimenta(danzarines y musicos)", "RECORRIDO(desplazamiento)", "INICIO RECORRIDO Y PUNTO FINAL", "Brigada Ecologica"]
     }
     return subcriterios.get(jurado_num, [])
+    
+def mostrar_alerta_sikuris(categoria):
+    """
+    Muestra una alerta si el conjunto pertenece a una categoría de sikuris.
+    Retorna True si se debe mostrar la alerta, False en caso contrario.
+    """
+    categorias_sikuris = [
+        "SIKURIS DE UN SOLO BOMBO",
+        "SIKURIS VARIOS BOMBOS",
+        "AYARACHIS, ISLA SIKUS Y KHANTUS"
+    ]
+    return categoria in categorias_sikuris
