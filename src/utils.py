@@ -82,10 +82,10 @@ def get_max_score(criterio, categoria):
             "default": 10
         },
         "RECORRIDO(desplazamiento)": {
-            "default": 10
+            "default": 7
         },
         "INICIO RECORRIDO Y PUNTO FINAL": {
-            "default": 7
+            "default": 10
         },
         "Brigada Ecologica": {
             "default": 3
