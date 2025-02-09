@@ -189,3 +189,15 @@ def verificar_calificacion_existente(db, candidato_id, jurado_num, categoria):
     except Exception as e:
         st.error(f"Error al verificar calificación existente: {e}")
         return False
+
+def obtener_subcriterios(jurado_num):
+    """
+    Obtiene los subcriterios de calificación según el número de jurado.
+    Solo aplica para los jurados 10, 11, 12 y 13 que tienen criterios específicos.
+    """
+    subcriterios = {
+        10: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
+        11: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
+        12: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
+        13: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"]
+    }
