@@ -9,7 +9,8 @@ from src.utils import (
     cargar_candidatos,
     actualizar_calificacion,
     verificar_calificacion_existente,
-    obtener_subcriterios
+    obtener_subcriterios,
+    mostrar_alerta_sikuris
 )
 
 def main():
@@ -55,6 +56,12 @@ def main():
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
     
+    # Inicializar el estado para la alerta de sikuris si no existe
+    if 'mostrar_alerta_sikuris' not in st.session_state:
+        st.session_state.mostrar_alerta_sikuris = False
+    if 'conjunto_anterior' not in st.session_state:
+        st.session_state.conjunto_anterior = None
+    
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
         options=[c[0] for c in candidatos],
@@ -67,6 +74,21 @@ def main():
             # Obtener datos del conjunto
             doc = db.collection("luces_day_one").document(candidato_seleccionado).get()
             datos = doc.to_dict()
+
+            # Verificar si es un nuevo conjunto seleccionado
+            if candidato_seleccionado != st.session_state.conjunto_anterior:
+                st.session_state.conjunto_anterior = candidato_seleccionado
+                # Verificar si pertenece a categoría de sikuris
+                if mostrar_alerta_sikuris(datos['categoria']):
+                    st.session_state.mostrar_alerta_sikuris = True
+
+            # Mostrar alerta de sikuris si corresponde
+            if st.session_state.mostrar_alerta_sikuris:
+                with st.container():
+                    st.warning("⚠️ Está a punto de calificar a un conjunto de sikuris, tener en cuenta que aplica un sistema de calificación diferente")
+                    if st.button("Entendido"):
+                        st.session_state.mostrar_alerta_sikuris = False
+                        st.rerun()
     
             # Verificar si ya existe calificación
             calificacion_existe = verificar_calificacion_existente(db, candidato_seleccionado, jurado_num, datos['categoria'])
