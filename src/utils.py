@@ -201,3 +201,4 @@ def obtener_subcriterios(jurado_num):
         12: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
         13: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"]
     }
+    return subcriterios.get(jurado_num, [])
