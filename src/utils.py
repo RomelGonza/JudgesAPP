@@ -23,9 +23,9 @@ def obtener_criterio_calificacion(jurado_num):
         (1, 2, 3): "PRESENTACION Y VESTIMENTA",
         (4, 5, 6): "MUSICA",
         (7, 8, 9): "COREOGRAFIA",
-        (10,): "MUSICA(danzarines y musicos)",
-        (11,): "VESTIMENTA(danzarines y musicos)",
-        (12,): "RECORRIDO(desplazamiento)",
+        (10,): "Vestimenta(danzarines y musicos)",
+        (11,): "RECORRIDO(desplazamiento)",
+        (12,): "INICIO RECORRIDO Y PUNTO FINAL",
         (13,): "Brigada Ecologica",
     }
     for jurados, criterio in criterios_jurados.items():
@@ -78,13 +78,13 @@ def get_max_score(criterio, categoria):
             "AYARACHIS, ISLA SIKUS Y KHANTUS": 15,
             "default": 40
         },
-        "MUSICA(danzarines y musicos)": {
-            "default": 10
-        },
-        "VESTIMENTA(danzarines y musicos)": {
+        "Vestimenta(danzarines y musicos)": {
             "default": 10
         },
         "RECORRIDO(desplazamiento)": {
+            "default": 10
+        },
+        "INICIO RECORRIDO Y PUNTO FINAL": {
             "default": 7
         },
         "Brigada Ecologica": {
@@ -196,9 +196,9 @@ def obtener_subcriterios(jurado_num):
     Solo aplica para los jurados 10, 11, 12 y 13 que tienen criterios específicos.
     """
     subcriterios = {
-        10: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
-        11: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
-        12: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"],
-        13: ["MUSICA(danzarines y musicos)", "VESTIMENTA(danzarines y musicos)", "RECORRIDO(desplazamiento)", "Brigada Ecologica"]
+        10: ["Vestimenta(danzarines y musicos)", "RECORRIDO(desplazamiento)", "INICIO RECORRIDO Y PUNTO FINAL", "Brigada Ecologica"],
+        11: ["Vestimenta(danzarines y musicos)", "RECORRIDO(desplazamiento)", "INICIO RECORRIDO Y PUNTO FINAL", "Brigada Ecologica"],
+        12: ["Vestimenta(danzarines y musicos)", "RECORRIDO(desplazamiento)", "INICIO RECORRIDO Y PUNTO FINAL", "Brigada Ecologica"],
+        13: ["Vestimenta(danzarines y musicos)", "RECORRIDO(desplazamiento)", "INICIO RECORRIDO Y PUNTO FINAL", "Brigada Ecologica"]
     }
     return subcriterios.get(jurado_num, [])
