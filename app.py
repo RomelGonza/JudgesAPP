@@ -26,8 +26,6 @@ def main():
         </style>
     """, unsafe_allow_html=True)    
 
-
-    
     # Autenticación
     if not check_session():
         if not login():
@@ -56,7 +54,6 @@ def main():
 
     # Cargar y mostrar candidatos
     candidatos = cargar_candidatos(db)
-    
     
     candidato_seleccionado = st.selectbox(
         "Seleccione un conjunto",
@@ -89,6 +86,10 @@ def main():
                 if jurado_num in [10, 11, 12, 13]:
                     calificaciones = []
                     criterios = obtener_subcriterios(jurado_num)
+                    
+                    # Checkbox para emblemas extranjeros (antes de los criterios)
+                    tiene_emblemas = st.checkbox("Vestimenta con emblemas extranjeros (-2 puntos)")
+                    
                     for criterio in criterios:
                         max_valor = get_max_score(criterio, datos['categoria'])
                         # Usar None como valor por defecto
@@ -159,10 +160,16 @@ def main():
                     if st.session_state.get('confirmacion', False):
                         try:
                             # Verificar que todas las calificaciones estén ingresadas
-                            if jurado_num in [10, 11, 12, 13] and len(calificaciones) != len(criterios):
-                                st.error("Por favor, ingrese todas las calificaciones antes de enviar.")
-                                st.session_state.confirmacion = False
-                                return
+                            if jurado_num in [10, 11, 12, 13]:
+                                if len(calificaciones) != len(criterios):
+                                    st.error("Por favor, ingrese todas las calificaciones antes de enviar.")
+                                    st.session_state.confirmacion = False
+                                    return
+                                # Aplicar la penalización de -2 puntos si el checkbox está marcado
+                                if tiene_emblemas:
+                                    calificaciones = [sum(calificaciones) - 2]
+                                else:
+                                    calificaciones = [sum(calificaciones)]
                             
                             exito = actualizar_calificacion(
                                 db,
