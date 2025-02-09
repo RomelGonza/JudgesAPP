@@ -90,11 +90,12 @@ def main():
                     calificaciones = []
                     criterios = obtener_subcriterios(jurado_num)
                     for criterio in criterios:
+                        max_valor = get_max_score(criterio, datos['categoria'])
                         # Usar None como valor por defecto
                         cal = st.number_input(
                             f"Calificación - {criterio}",
                             min_value=0.0,
-                            max_value=10.0,
+                            max_value=float(max_valor),
                             step=0.5,
                             value=None,  # Valor inicial None
                             placeholder="Ingrese calificación",
@@ -104,6 +105,7 @@ def main():
                         if cal is not None:
                             calificaciones.append(cal)
                 else:
+                    criterio = obtener_criterio_calificacion(jurado_num)
                     max_valor = get_max_score(criterio, datos['categoria'])
                     # Usar None como valor por defecto
                     calificacion = st.number_input(
